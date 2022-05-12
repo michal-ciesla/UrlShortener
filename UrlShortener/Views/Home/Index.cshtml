@@ -1,0 +1,26 @@
+﻿@model LongUrl
+
+
+<div>
+    <h3>Upload URL</h3>
+
+    <form asp-action="Shorten" method="post">
+        <div>
+            <label asp-for="Value" class="" >URL:</label>
+            <input asp-for="Value" />
+        </div>
+        <div>
+            <p></p>
+            <button type="submit">Submit</button>
+            <p></p>
+        </div>
+    </form>
+    
+    @if (ViewBag.Uploaded ?? false)
+    {
+        <div>
+            ShortenedUrl uploaded 
+        </div>
+    }
+    
+    </div>

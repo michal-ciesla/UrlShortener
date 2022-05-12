@@ -1,0 +1,14 @@
+﻿@model IEnumerable<ShortenedUrl>
+
+@{
+    ViewData["Title"] = "Shortened URL’s";
+}
+<h3>@ViewData["Title"]</h3>
+
+@foreach (var shortenedUrl in Model)
+{
+    <div>
+        <div>Shorted: @shortenedUrl.Value</div>
+        <div>Long url: @shortenedUrl.OriginalUrl</div>
+    </div>
+}
