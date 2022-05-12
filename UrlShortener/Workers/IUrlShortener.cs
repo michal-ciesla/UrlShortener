@@ -4,5 +4,5 @@ namespace UrlShortener.Workers;
 
 public interface IUrlShortener
 {
-    public Task<ShortenedUrl> GenerateAsync(LongUrl longUrl);
+    public Task<ShortenedUrl> GenerateAsync(string baseHost, LongUrl longUrl);
 }

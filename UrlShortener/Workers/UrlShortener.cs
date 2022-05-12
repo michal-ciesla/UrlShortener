@@ -4,7 +4,6 @@ namespace UrlShortener.Workers;
 
 public class UrlShortener : IUrlShortener
 {
-    private const string _base = "https://localhost:5555";
     const string BaseUrlChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private readonly ILogger<UrlShortener> _logger;
 
@@ -13,7 +12,7 @@ public class UrlShortener : IUrlShortener
         _logger = logger;
     }
 
-    public async Task<ShortenedUrl> GenerateAsync(LongUrl longUrl)
+    public async Task<ShortenedUrl> GenerateAsync(string baseHost, LongUrl longUrl)
     {
         if (longUrl is null || string.IsNullOrWhiteSpace(longUrl.Value))
         {
@@ -37,7 +36,8 @@ public class UrlShortener : IUrlShortener
             var urlCode = numList.Aggregate(string.Empty, (current, num) => 
                 current + BaseUrlChars.Substring(num, 1));
 
-            shortenedUrl.Value = $"{_base}/{urlCode}";
+            shortenedUrl.UrlCode = urlCode;
+            shortenedUrl.Value = $"{baseHost}/{urlCode}";
         });
 
         return shortenedUrl;

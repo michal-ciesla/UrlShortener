@@ -29,6 +29,18 @@ namespace UrlShortener.Controllers
             return View((IEnumerable<ShortenedUrl>)await _urlShortenedProvider.ShortenedUrls());
         }
 
+        [Route("/{urlCode}")]
+        public async Task<IActionResult> ShortenedRedirect(string urlCode)
+        {
+            if (await _urlShortenedProvider.Exists(x => x.UrlCode == urlCode))
+            {
+                var redirectUrl = await _urlShortenedProvider.Get(x => x.UrlCode == urlCode);
+                return Redirect(redirectUrl.OriginalUrl);
+            }
+
+            return Unauthorized("Wrong url code");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Shorten(LongUrl url)
         {
@@ -38,13 +50,19 @@ namespace UrlShortener.Controllers
                 return new UnauthorizedResult();
             }
 
-            if (await _urlShortenedProvider.Exists(url.Value))
+            if (await _urlShortenedProvider.Exists(x => x.Value == url.Value) || 
+                await _urlShortenedProvider.Exists(x => x.OriginalUrl == url.Value))
             {
+                var redirectUrl = await _urlShortenedProvider.Get(x 
+                    => x.OriginalUrl == url.Value || x.Value == url.Value);
+
                 _logger.LogInformation("Shortened url exists. Redirect to: {shortenedUrl}");
-                return Redirect(url.Value);
+                return Redirect(redirectUrl.OriginalUrl);
             }
 
-            var shortenedUrl = await _urlShortener.GenerateAsync(url);
+            var shortHost = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+
+            var shortenedUrl = await _urlShortener.GenerateAsync(shortHost, url);
             shortenedUrl.OriginalUrl = url.Value;
 
             await _urlShortenedProvider.Load(shortenedUrl);
